@@ -7,7 +7,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
-
+import re
+import PyPDF2
 
 
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
@@ -51,16 +52,18 @@ class MyFrame(wx.Frame):
         self.btn2 = wx.Button(self.panel, label="I wanna Know which Course we have on the big drive")
         self.btn3 = wx.Button(self.panel, label="I wanna Know which Course we have on the big drive")
         self.btn4 = wx.Button(self.panel,label="I wanna add new Curse")
+        self.btn10 = wx.Button(self.panel,label="מבחנים לפי מרצה")
 
 
        # self.btn2 = wx.Button(self.panel, label="")
 
         # add sizer
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.btn1, 0, wx.ALL, 10)
         sizer.Add(self.btn2, 0, wx.ALL, 10)
         sizer.Add(self.btn3, 0, wx.ALL, 10)
         sizer.Add(self.btn4, 0, wx.ALL, 10)
+        sizer.Add(self.btn10, 0, wx.ALL, 10)
         self.panel.SetSizer(sizer)
         # Connect the buttuns to the libary
 
@@ -68,7 +71,8 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnKnowWitchCourse, self.btn2)
         self.Bind(wx.EVT_BUTTON, self.readFiles, self.btn3)
         self.Bind(wx.EVT_BUTTON, self.OnCreateCourse,self.btn4)
-
+        self.Bind(wx.EVT_BUTTON, self.NameSearchTest,self.btn10)
+        self.panel.Layout()
 
 
     def OnOpen(self,event):
@@ -84,6 +88,29 @@ class MyFrame(wx.Frame):
 
     def OnCreateCourse(self,event):
         print("yes")
+
+    def NameSearchTest(self,event):
+        for root,dirs,files in os.walk("C:/Users/itke/Documents/6RD_SEMESTER/GIT/Vad") :
+                for folder in dirs:
+                    if (folder.find("236703") >-1 ):
+                        name = os.path.join(root,folder)
+                        for tmp in os.walk(name):
+                            for tests in tmp[2]:
+                                    if(tests.find(".pdf")<0):
+                                        continue
+                                    print(name)
+                                    currpath = os.path.join(name, tests)
+                                    print(currpath)
+                                    file = open(currpath,'rb')
+
+                                    reader = PyDF2.PdfFileReader(file)
+                                    lecturer = "יוסי גיל"
+                                    for i in range(0,1):
+                                        page=reader.getpage(i)
+                                        text=page.extracttext()
+                                        if(re.search(lecturer,text)):
+                                            print(tests)
+
 
 
 
